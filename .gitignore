@@ -1,0 +1,6 @@
+.git
+.idea
+/vendor
+/storage
+config.json
+composer.lock

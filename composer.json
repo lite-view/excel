@@ -1,0 +1,14 @@
+{
+    "name": "lite-view/excel",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.2",
+        "phpoffice/phpspreadsheet": "^1.19"
+    },
+    "autoload": {
+        "psr-4": {
+            "LiteView\\Excel\\": "src/"
+        }
+    }
+}
