@@ -62,39 +62,29 @@ class Excel
         return new Export($spreadsheet);
     }
 
-    public static function read($filePath, $callback = null, $needSheet = false)
+    public static function read($path, $callback = null)
     {
-        if (!file_exists($filePath)) {
-            $tmpPath = root_path() . '/' . time() . rand(10000, 99999) . '.xlsx';
-            //file_put_contents($tmpPath, file_get_contents($filePath));
-            file_put_contents($tmpPath, file_get_contents($_FILES['file']['tmp_name']));
-            $filePath = $tmpPath;
-        }
-
-        $objRead = IOFactory::createReader('Xlsx');
-        $obj = $objRead->load($filePath);
-        if (!empty($tmpPath)) {
-            unlink($tmpPath);
-        }
-
-        $currSheet = $obj->getSheet(0);
-        if ($needSheet) {
-            return $currSheet;
-        }
-
+        $currSheet = IOFactory::createReader('Xlsx')->load($path)->getSheet(0);
         $rowCnt = $currSheet->getHighestRow();
         $data = [];
+        $error = null;
+        $validated = [];
         for ($row = 1; $row <= $rowCnt; $row++) {
-            $columnH = $currSheet->getHighestColumn();
-            $columnCnt = Coordinate::columnIndexFromString($columnH);
+            $columnCnt = Coordinate::columnIndexFromString($currSheet->getHighestColumn());
             for ($column = 1; $column <= $columnCnt; $column++) {
                 $cellName = Coordinate::stringFromColumnIndex($column);
                 $data[$row][$cellName] = $currSheet->getCell($cellName . $row)->getFormattedValue();
             }
             if (is_callable($callback)) {
-                $callback($data[$row], $row);
+                $result = $callback($data[$row], $row);
+                if (!empty($result['error'])) {
+                    $error[] = $result['error'];
+                }
+                if (!empty($result['data'])) {
+                    $validated[] = $result['data'];
+                }
             }
         }
-        return $data;
+        return [$error, $validated, $data];
     }
 }
