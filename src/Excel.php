@@ -17,6 +17,7 @@ use LiteView\Excel\Intents\Export;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class Excel
 {
@@ -86,5 +87,17 @@ class Excel
             }
         }
         return [$error, $validated, $data];
+    }
+
+    public static function isEmptyRow(Worksheet $currSheet, $row)
+    {
+        $columnCnt = Coordinate::columnIndexFromString($currSheet->getHighestColumn());
+        for ($column = 1; $column <= $columnCnt; $column++) {
+            $cellName = Coordinate::stringFromColumnIndex($column);
+            if ($currSheet->getCell($cellName . $row)->getFormattedValue()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
