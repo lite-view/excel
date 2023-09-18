@@ -100,4 +100,27 @@ class Excel
         }
         return true;
     }
+
+    public static function columnConvert($column)
+    {
+        // 最大值为：ZZ
+        for ($i = 0; $i <= 701; $i++) {
+            $y = $i / 26;
+            if ($y >= 1) {
+                $y = intval($y);
+                $a = chr($y + 64);
+                $b = chr($i - $y * 26 + 65);
+                $str = $a . $b;
+            } else {
+                $str = chr($i + 65);
+            }
+            if ($column === $i || strtoupper($column) === $str) {
+                if (is_numeric($column)) {
+                    return $str; //26 转成 AA
+                }
+                return $i; //AA 转成 26
+            }
+        }
+        return null;
+    }
 }
